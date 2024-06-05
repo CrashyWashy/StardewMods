@@ -1,0 +1,26 @@
+{
+  "Author": "crashy",
+  "Description": "My take on Machine Augmentors. heavily inspired by SlayerDharok's mod",
+  "EntryDll": "MachineAugmentorsExtended.dll",
+  "MinimumApiVersion": "3.0.0",
+  "Name": "MachineAugmentorsExtended",
+  "UniqueID": "crashy.MachineAugmentorsExtended",
+  "UpdateKeys": [],
+  "Version": "0.0.1",
+
+  "Dependencies": [
+    {
+      "UniqueID": "Slothsoft.Informant",
+      "MinimumVersion": "1.8.4"
+    },
+    {
+      "UniqueID": "Pathoschild.ContentPatcher",
+      "MinimumVersion": "2.0.0"
+    },
+    {
+      "UniqueID": "spacechase0.SpaceCore",
+      "MinimumVersion": "1.23.1"
+    }
+
+  ]
+}

@@ -1,0 +1,11 @@
+﻿{
+  "Id": "crashy.speed_augmentor",
+  "Object":
+  {
+    "Name": "Speed Augmentor",
+    "Description": "Increases the speed of the machine it is added to.",
+    "Type": "Crafting",
+    "Texture": "LooseSprites\\Cursors",
+    "SpriteIndex": 890
+  }
+}
