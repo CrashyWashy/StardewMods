@@ -1,28 +1,13 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using HarmonyLib;
+﻿using HarmonyLib;
 using MachineAugmentorsExtended.Data;
 using MachineAugmentorsExtended.Items;
 using MachineAugmentorsExtended.Patches;
 //using MachineAugmentorsExtended.Harmony;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewModdingAPI.Utilities;
-using StardewValley;
-using StardewValley.ItemTypeDefinitions;
 using StardewValley.Menus;
-using xTile.Tiles;
 using MachineAugmentorsExtended.ThirdParty;
-using StardewModdingAPI.Framework.ModLoading.Rewriters.StardewValley_1_6;
-using StardewValley.Objects;
-using StardewValley.GameData;
-using StardewValley.GameData.Shops;
 using StardewValley.GameData.Objects;
-using StardewValley.Mods;
-using Vector2 = System.Numerics.Vector2;
 
 namespace MachineAugmentorsExtended
 {
@@ -35,7 +20,6 @@ namespace MachineAugmentorsExtended
 
         public ModData ModData;
         private GamePatches GamePatches;
-        public static Texture2D SpeedAugmentorTexture { get; set; }
 
         public override void Entry(IModHelper helper)
         {
@@ -45,20 +29,12 @@ namespace MachineAugmentorsExtended
             
             // Harmony stuff
             var harmony = new Harmony(this.ModManifest.UniqueID);
-            // harmony.Patch(
-            //     original: AccessTools.Method(typeof(StardewValley.Object),
-            //         nameof(StardewValley.Object.performObjectDropInAction)),
-            //     prefix: new HarmonyMethod(typeof(GamePatches), nameof(GamePatches.performObjectDropInAction_Prefix))
-            // );
+
             harmony.Patch(
                 original: AccessTools.Method(typeof(StardewValley.Object),
                     nameof(StardewValley.Object.performObjectDropInAction)),
                 postfix: new HarmonyMethod(typeof(GamePatches), nameof(GamePatches.performObjectDropInAction_Postfix))
             );
-            // harmony.Patch(
-            //     original: AccessTools.Method(typeof(StardewValley.Object), nameof(StardewValley.Object.checkForAction)),
-            //     prefix: new HarmonyMethod(typeof(GamePatches), nameof(GamePatches.checkForAction_Prefix))
-            // );
             harmony.Patch(
                 original: AccessTools.Method(typeof(StardewValley.Object), nameof(StardewValley.Object.draw), [typeof(SpriteBatch),typeof(int), typeof(int), typeof(float)]),
                 postfix: new HarmonyMethod(typeof(GamePatches), nameof(GamePatches.draw_Postfix))
@@ -71,11 +47,6 @@ namespace MachineAugmentorsExtended
                 original: AccessTools.Method(typeof(StardewValley.Object), nameof(StardewValley.Object.OutputMachine)),
                 postfix: new HarmonyMethod(typeof(GamePatches), nameof(GamePatches.OutputMachine_Postfix))
             );
-            // end of harmony stuff
-
-            // AugData = helper.Data.ReadJsonFile<AugmentorData>("assets/data.json") ??
-            //           throw new InvalidOperationException();
-            // Log.Debug($"{AugData.Id}");
 
             ModData = new ModData(new List<AugmentorData>());
             foreach (AugmentorType aug in Enum.GetValues(typeof(AugmentorType)))
@@ -101,10 +72,6 @@ namespace MachineAugmentorsExtended
 
             }
             helper.Data.WriteJsonFile($"assets/data.json", ModData);
-
-            // load assets
-            SpeedAugmentorTexture = helper.GameContent.Load<Texture2D>("LooseSprites/Cursors");
-
             helper.Events.GameLoop.GameLaunched += this.GameLaunched;
             helper.Events.GameLoop.SaveLoaded += this.OnSaveLoaded;
             helper.Events.GameLoop.Saved += this.OnGameSaved;
