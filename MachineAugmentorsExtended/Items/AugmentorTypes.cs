@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace MachineAugmentorsExtended.Items
 {
@@ -15,13 +14,7 @@ namespace MachineAugmentorsExtended.Items
         None = -1,
 
     }
-
-    //TODO - array of delegates with
-    public class AugmentorTypes
-    {
-        
-    }
-
+    
     [XmlRoot("SpeedAugmentor", Namespace = "")]
     public class SpeedAugmentor() : Augmentor(AugmentorType.Speed)
     {

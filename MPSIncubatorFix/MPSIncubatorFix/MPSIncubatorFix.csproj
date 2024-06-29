@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <EnableHarmony>true</EnableHarmony>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>Latest</LangVersion>
+        <GamePath>C:\SteamLibrary\steamapps\common\Stardew Valley</GamePath>
+        <GameModsPath>$(GamePath)/Mods-ide</GameModsPath>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" />
+        <Using Include="StardewValley" />
+        <Using Include="StardewModdingAPI" />
+    </ItemGroup>
+    
+    
+
+</Project>

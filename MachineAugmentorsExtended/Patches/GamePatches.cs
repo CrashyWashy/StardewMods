@@ -15,12 +15,6 @@ namespace MachineAugmentorsExtended.Patches;
 
 internal class GamePatches
 {
-    private static IMonitor Monitor;
-
-    internal static void Initialize(IMonitor monitor)
-    {
-        Monitor = monitor;
-    }
     
     public static void performObjectDropInAction_Postfix(
         SObject __instance,
@@ -48,30 +42,42 @@ internal class GamePatches
             Log.Error($"{e}");
         }
     }
+
+    public class OutputMachineState(SObject obj, MachineData data, MachineOutputRule outputRule)
+    {
+        public SObject Obj { get; set; } = obj;
+        public MachineData Data { get; set; } = data;
+        public MachineOutputRule OutputRule { get; set; } = outputRule;
+
+        public Dictionary<string, int> ACItems { get; set; } = new();
+        public int OriginalMinutesUntilReady { get; set; } = new();
+    }
+
+    private static OutputMachineState _outputMachineState { get; set; }
+
     public static void OutputMachine_Prefix(
         SObject __instance,
         MachineData machine, 
         MachineOutputRule outputRule, 
         Item inputItem, Farmer who, 
         GameLocation location, 
-        bool probe,
-        out Dictionary<AugmentorType, dynamic> __state
-        
+        bool probe
     )
-    { 
-        __state = new Dictionary<AugmentorType, dynamic>();
+    {
+        if (probe) _outputMachineState = null;
         
         if (!probe 
             && MachinesData.DoesThisContainAnyAugmentor(__instance) 
             && MachinesData.Instance.AugmentorIds(inputItem) == AugmentorType.None
         )
-        {
-            __state.TryAdd(AugmentorType.Speed, outputRule.MinutesUntilReady);
-            __state.TryAdd(AugmentorType.Efficiency, machine.AdditionalConsumedItems);
+        { 
+            _outputMachineState = new OutputMachineState(__instance, machine, outputRule);
+            
             
             // speed
             if (MachinesData.DoesThisContainAugmentor(__instance, AugmentorType.Speed))
             {
+                _outputMachineState.OriginalMinutesUntilReady = outputRule.MinutesUntilReady;
                 outputRule.MinutesUntilReady =
                     MachinesData.CalculateAugmentedTime(outputRule.MinutesUntilReady,
                         MachinesData.GetAugCount(__instance, 0));
@@ -79,40 +85,43 @@ internal class GamePatches
             // efficiency
             if (MachinesData.DoesThisContainAugmentor(__instance, AugmentorType.Efficiency))
             {
-                outputRule.MinutesUntilReady = 0;
+                outputRule.MinutesUntilReady = 10;
                 if (machine.AdditionalConsumedItems.Count > 0)
                 {
                     foreach (var i in machine.AdditionalConsumedItems)
                     {
-                        var x = i;
-                        if (MachinesData.PerformEffiAugRNG(__instance))
-                        {
-                            i.RequiredCount = 0;
-                        }
-                        
-                        Log.Debug($"old: {x.RequiredCount} new: {i.RequiredCount}");
+                        // if (MachinesData.PerformEffiAugRNG(__instance))
+                        // {
+                        //     i.RequiredCount = 0;
+                        // }
+                        _outputMachineState.ACItems.Add(i.ItemId, i.RequiredCount);
+                        i.RequiredCount = 0;
+                        Log.Debug($"{_outputMachineState.ACItems[i.ItemId]}");
                     }
-                } 
+                }
             }
-            Log.Debug($"original: {__state[AugmentorType.Speed]} | augmented: {outputRule.MinutesUntilReady}");
         }
+        
     }
     public static void OutputMachine_Postfix(
         SObject __instance,
         MachineData machine,
         MachineOutputRule outputRule,
-        bool probe, 
-        Dictionary<AugmentorType, dynamic> __state
+        bool probe
     )
     {
+        if (_outputMachineState is null) return;
+        
         if(!probe && MachinesData.DoesThisContainAugmentor(__instance, AugmentorType.Speed))
         {
-            outputRule.MinutesUntilReady = (int)__state[AugmentorType.Speed];
+            outputRule.MinutesUntilReady = _outputMachineState.OriginalMinutesUntilReady;
         }
         if (!probe && MachinesData.DoesThisContainAugmentor(__instance, AugmentorType.Efficiency))
         {
-            machine.AdditionalConsumedItems = (List<MachineItemAdditionalConsumedItems>)
-                __state[AugmentorType.Efficiency];
+            foreach (var i in machine.AdditionalConsumedItems)
+            {
+                i.RequiredCount = _outputMachineState.ACItems[i.ItemId];
+            }
         }
     }
 

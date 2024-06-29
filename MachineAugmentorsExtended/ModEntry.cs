@@ -112,6 +112,7 @@ namespace MachineAugmentorsExtended
             MachinesData.Instance = new MachinesData();
             MachinesData.Instance = this.Helper.Data.ReadJsonFile<MachinesData>("augmentedlocations.json") ?? 
                                     new MachinesData();
+            MachinesData.Instance.StartupCheck();
         }
 
         private void OnGameSaved(object? sender, SavedEventArgs e)

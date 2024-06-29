@@ -1,0 +1,10 @@
+{
+  "Name": "MPS Incubator Fix",
+  "Author": "crashy",
+  "Version": "0.0.1",
+  "Description": "Fixy-Wixy",
+  "UniqueID": "crashy.MPSIncubatorFix",
+  "EntryDll": "MPSIncubatorFix.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": []
+}

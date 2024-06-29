@@ -15,7 +15,22 @@ public class MachinesData
     private static readonly Random rand = Utility.CreateRandom(Game1.stats.StepsTaken, Game1.stats.DaysPlayed);
     
     public Dictionary<string, WorldLocationInstance> Locations { get; set; } = new();
-    
+
+    internal void StartupCheck()
+    {
+        foreach (var location in Locations.Values)
+        {
+            // check if there is a machine here
+            var loc = Game1.getLocationFromName(location.LocationName);
+            foreach (var tile in location.Tiles)
+            {
+                if (!loc.isObjectAtTile(tile.Value._x, tile.Value._y))
+                {
+                    location.Tiles.Remove(tile.Key);
+                }
+            }
+        }
+    }
     
     internal void OnAugmentorPlaced(SObject obj, Farmer who, AugmentorType type)
     {
@@ -95,7 +110,6 @@ public class MachinesData
         if (!Instance.Locations.TryGetValue(obj.Location.NameOrUniqueName, out var location)
             || !location.Tiles.TryGetValue($"{obj.TileLocation}", out var tile))
             return false;
-        Log.Debug(tile.AugmentorsDict.ContainsKey(type).ToString());
         return tile.AugmentorsDict.ContainsKey(type);
     }
 
@@ -116,11 +130,15 @@ public class MachinesData
 public class MachineTileInstance
 { 
     public Vector2 MachineTile { get; set; }
+    internal int _x { get; set; }
+    internal int _y { get; set; }
     public Dictionary<AugmentorType,int> AugmentorsDict { get; set; }
     public MachineTileInstance(Vector2 machineTile)
     { 
-        this.MachineTile = machineTile;
-        this.AugmentorsDict = new Dictionary<AugmentorType, int>();
+        MachineTile = machineTile;
+        AugmentorsDict = new Dictionary<AugmentorType, int>();
+        _x = (int)MachineTile.X;
+        _y = (int)MachineTile.Y;
     }
 }
 public class WorldLocationInstance
