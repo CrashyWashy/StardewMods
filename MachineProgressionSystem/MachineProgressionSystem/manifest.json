@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Machine Progression System Extras",
+  "Author": "crashy",
+  "Version": "0.0.1",
+  "Description": "C# Components for MPS",
+  "UniqueID": "crashy.MachineProgressionSystem",
+  "EntryDll": "MachineProgressionSystem.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": []
+}
